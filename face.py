@@ -4,66 +4,60 @@ import sys
 import time
 import httplib, urllib, base64
 import numpy as np
+import json
 
+myApiId = sys.argv[1]
+print myApiId
 headers = {
     # Request headers
-    #'Content-Type': 'application/json',
     'Content-Type': 'application/octet-stream',
-    'Ocp-Apim-Subscription-Key': 'my-id-here',
+    'Ocp-Apim-Subscription-Key': myApiId,
 }
 
 params = urllib.urlencode({
    'faceRectangles': '',
 })
 
-body = '{\'URL\': \'http://www.theweeklings.com/wp-content/uploads/baby-crying-450.jpg\'}'
-
-#cascPath = sys.argv[1]
-cascPath = '/usr/share/opencv/haarcascades/haarcascade_frontalface_default.xml'
-faceCascade = cv2.CascadeClassifier(cascPath)
-
 video_capture = cv2.VideoCapture(0)
-
-lastTime = time.time()
+lastTime      = time.time()
+emotionKnown  = False
+emotionalConf = 0
+status       = ''
+processDelaySec = 5
 while True:
-    # Capture frame-by-frame
     ret, frame = video_capture.read()
     ret, im    = cv2.imencode( '.jpg', frame )  
     bindata    = np.array(im).tostring()
-    
-    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+    (rows,cols,channels) = frame.shape
 
-    faces = faceCascade.detectMultiScale(
-        gray,
-        scaleFactor=1.1,
-        minNeighbors=5,
-        minSize=(30, 30),
-        flags=cv2.cv.CV_HAAR_SCALE_IMAGE
-    )
-
-    # Draw a rectangle around the faces
-    for (x, y, w, h) in faces:
-        cv2.rectangle(frame, (x, y), (x+w, y+h), (0, 255, 0), 2)
-
-    if time.time() - lastTime > 10:
-      print "Time is 10"
+    if time.time() - lastTime > processDelaySec:
+      print "Processing Frame"
       try:
 	  conn = httplib.HTTPSConnection('api.projectoxford.ai')
 	  conn.request("POST", "/emotion/v1.0/recognize?%s" % params, bindata, headers)
 	  response = conn.getresponse()
 	  data = response.read()
-	  print(data)
 	  conn.close()
-	  cv2.putText(frame,"Just a Test", (50, rows / 2), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255),2)
+          d = json.loads(data)
+          if len(d)>0:
+            emotionalConf = 0
+            for sc in d[0]['scores']:
+              if d[0]['scores'][sc] > emotionalConf:
+                emotionalConf    = d[0]['scores'][sc]
+                status = sc
+                print sc, d[0]['scores'][sc]
+            emotionKnown = True
+            print 'We are:',emotionalConf*100,'% confident that you are', status
       except Exception as e:
-	  print("[Errno {0}] {1}".format(e.errno, e.strerror))      
+        print("[Errno {0}] {1}".format(e.errno, e.strerror))      
       lastTime = time.time()
     # Display the resulting frame
+    if emotionKnown:
+      cv2.putText(frame,"Why so "+ str(emotionalConf*100) + '%' + status, (50, rows / 2), cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,255),2)
     cv2.imshow('Video', frame)
 
     if cv2.waitKey(1) & 0xFF == ord('q'):
         break
 
-# When everything is done, release the capture
 video_capture.release()
 
