@@ -71,7 +71,7 @@ soundsFolder      = '/media/RouterMedia/BabyMonitor/sounds'
 imagesFolder      = '/media/RouterMedia/BabyMonitor/images'
 logsFolder        = '/media/RouterMedia/BabyMonitor/logs'
 
-logging.basicConfig(filename= logsFolder + '/log_' + time.strftime("%Y-%m-%d_%H:%M:%S") + '.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s:%(message)s - ', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.basicConfig(filename= logsFolder + '/log_' + time.strftime("%Y-%m-%d_%H:%M:%S") + '.log', filemode='w',level=logging.DEBUG,format='%(asctime)s %(levelname)s:%(message)s - ', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.info('BabyMonitor Initiated')
 
 # Microphone stream config.
@@ -197,7 +197,7 @@ def save_speech(data, p):
     """ Saves mic data to temporary WAV file. Returns filename of saved 
         file """
     global soundsFolder
-    filename = soundsFolder + '/output_'+str(int(time.time()))
+    filename = soundsFolder + '/output_'+ time.strftime("%Y-%m-%d_%H:%M:%S")
     # writes data to WAV file
     data = ''.join(data)
     wf = wave.open(filename + '.wav', 'wb')
