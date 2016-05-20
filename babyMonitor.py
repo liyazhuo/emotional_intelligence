@@ -177,7 +177,6 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
     print "* Done recording"
     stream.close()
     p.terminate()
-
     return response
 
 
