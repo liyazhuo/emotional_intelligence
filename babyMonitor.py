@@ -46,7 +46,7 @@ client.loop_start()
 capture = None
 
 myApiId = sys.argv[1]
-print myApiId
+
 headers = {
     # Request headers
     'Content-Type': 'application/octet-stream',
@@ -71,8 +71,8 @@ soundsFolder      = '/media/RouterMedia/BabyMonitor/sounds'
 imagesFolder      = '/media/RouterMedia/BabyMonitor/images'
 logsFolder        = '/media/RouterMedia/BabyMonitor/logs'
 
-logging.basicConfig(filename='log_' + time.strftime("%Y-%m-%d_%H:%M:%S") + '.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
-logging.debug('BabyMonitor Initiated')
+logging.basicConfig(filename= logsFolder + '/log_' + time.strftime("%Y-%m-%d_%H:%M:%S") + '.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s:%(message)s - ', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.info('BabyMonitor Initiated')
 
 # Microphone stream config.
 CHUNK = 2048  # CHUNKS of bytes to read each time from mic
@@ -137,7 +137,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
                     input_device_index = 2,                    
                     frames_per_buffer=CHUNK)
 
-    print "* Listening mic. "
+    logging.info("* Listening mic. ")
     audio2send = []
     cur_data = ''  # current chunk  of audio data
     rel = RATE/CHUNK
@@ -157,7 +157,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
             #    raise
             cur_data = '\x00' * CHUNK
         except:
-            print "Unexpected error:", sys.exc_info()[0]       
+            logging.error("Unexpected error:" + sys.exc_info()[0])       
         numReads = numReads + 1
         if numReads < 5:
             continue
@@ -166,15 +166,15 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
         # print slid_win[-1]
         if(sum([x > THRESHOLD for x in slid_win]) > 0):
             if(not started):
-                print "Starting record of phrase"
+                logging.info("Starting record of phrase")
                 started = True
             audio2send.append(cur_data)
         elif (started is True):
-            print "Finished"
+            logging.info("Finished")
             # The limit was reached, finish capture and deliver.
             filename = save_speech(list(prev_audio) + audio2send, p)
             (rc, mid) = client.publish("/home/babyMonitor/soundDetected", filename, qos=1)
-            print "saved to :",filename
+            logging.info("saved to :" + filename)
             # Remove temp file. Comment line to review.
             #os.remove(filename)
             # Reset all
@@ -183,11 +183,11 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
             prev_audio = deque(maxlen=0.5 * rel) 
             audio2send = []
             n -= 1
-            print "Listening ..."
+            logging.info("Listening ...")
         else:
             prev_audio.append(cur_data)
 
-    print "* Done recording"
+    logging.info("* Done recording")
     stream.close()
     p.terminate()
     return response
@@ -231,7 +231,7 @@ class CamHandler(BaseHTTPRequestHandler):
                     bindata    = np.array(im).tostring()
                     (rows,cols,channels) = frame.shape
                     if time.time() - lastTime > processDelaySec and analyseImage:
-                        print "Processing Frame"
+                        logging.info("Processing Frame")
                         try:
                             conn = httplib.HTTPSConnection('api.projectoxford.ai')
                             conn.request("POST", "/emotion/v1.0/recognize?%s" % params, bindata, headers)
@@ -239,18 +239,18 @@ class CamHandler(BaseHTTPRequestHandler):
                             data = response.read()
                             conn.close()
                             d = json.loads(data)
-                            print d
+                            #print d
                             if len(d)>0:
                                 emotionalConf = 0
                                 for sc in d[0]['scores']:
                                     if d[0]['scores'][sc] > emotionalConf:
                                         emotionalConf    = d[0]['scores'][sc]
                                         status = sc
-                                        print sc, d[0]['scores'][sc]
+                                        #print sc, d[0]['scores'][sc]
                                     emotionKnown = True
-                                    print 'We are:',emotionalConf*100,'% confident that you are', status
+                                    #print 'We are:',emotionalConf*100,'% confident that you are', status
                         except Exception as e:
-                            print("[Errno {0}] {1}".format(e.errno, e.strerror))      
+                            logging.info("[Errno {0}] {1}".format(e.errno, e.strerror))      
                         lastTime = time.time()
                     # Display the resulting frame
                     if emotionKnown:
@@ -297,10 +297,10 @@ def main():
         # Use this to get the noise level and calibrate the threshold
         #audio_int()  # To measure your mic levels
     except:
-        print "Error: Unable to start thread"            
+        logging.error("Error: Unable to start thread")
     try:
         server = HTTPServer(('',8080),CamHandler)
-        print "server started"
+        logging.info("server started")
         server.serve_forever()
     except KeyboardInterrupt:
         capture.release()
