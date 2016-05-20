@@ -57,12 +57,18 @@ params = urllib.urlencode({
    'faceRectangles': '',
 })
 
-lastTime        = time.time()
-emotionKnown    = False
-analyseImage    = False
-emotionalConf   = 0
-status          = ''
-processDelaySec = 30    
+lastTime          = time.time()
+lastTimeImageSave = time.time()
+emotionKnown      = False
+analyseImage      = False
+emotionalConf     = 0
+status            = ''
+processDelaySec   = 30    
+#Seconds between image save, -1 to disable
+imageSavingPeriod = 5
+
+soundsFolder      = '/media/RouterMedia/BabyMonitor/sounds'
+imagesFolder      = '/media/RouterMedia/BabyMonitor/images'
 
 # Microphone stream config.
 CHUNK = 2048  # CHUNKS of bytes to read each time from mic
@@ -185,7 +191,8 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
 def save_speech(data, p):
     """ Saves mic data to temporary WAV file. Returns filename of saved 
         file """
-    filename = 'output_'+str(int(time.time()))
+    global soundsFolder
+    filename = soundsFolder + '/output_'+str(int(time.time()))
     # writes data to WAV file
     data = ''.join(data)
     wf = wave.open(filename + '.wav', 'wb')
@@ -204,6 +211,9 @@ class CamHandler(BaseHTTPRequestHandler):
             global emotionalConf
             global status
             global processDelaySec   
+            global imagesFolder
+            global imageSavingPeriod
+            global lastTimeImageSave
             self.send_response(200)
             self.send_header('Content-type','multipart/x-mixed-replace; boundary=--jpgboundary')
             self.end_headers()
@@ -244,6 +254,10 @@ class CamHandler(BaseHTTPRequestHandler):
                         (rc, mid) = client.publish("/home/babyMonitor/faceEmotion", str(status), qos=1)
                     else:
                         cv2.putText(frame,time.strftime("%Y-%m-%d %H:%M:%S"), (cols -200, rows -20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)  
+                    
+                    if imageSavingPeriod != -1 and (time.time() - lastTimeImageSave) > imageSavingPeriod:
+                        cv2.imwrite(imagesFolder + '/image_'+ time.strftime("%Y-%m-%d %H:%M:%S") + '_.png',frame)
+                        lastTimeImageSave = time.time()
                     imgRGB=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
                     jpg = Image.fromarray(imgRGB)
                     tmpFile = StringIO.StringIO()
