@@ -5,6 +5,9 @@ import os
 import sys
 import socket
 
+scriptName = 'babyMonitor.py'
+scriptCmd  = "./babyMonitor.py `cat apiId.txt` &"
+
 # Just be sure that we are running only one instance of this script
 
 def getLock(process_name):
@@ -19,7 +22,11 @@ def getLock(process_name):
 # getLock('robotica')
 
 print 'Starting Script'    
-
+#Kill the script if it's already running
+killProcessByName(scriptName)
+#Re-run the script
+os.system(scriptCmd)
+    
 # This script will run on the raspberry pi, check if the monitoring script changed, get the latest version and re-run it
 # 1- Check if the code changed (git pull)
 # 2- Kill the running program
@@ -53,8 +60,8 @@ while True:
   if output != '' and 'Already up-to-date' not in output:
     print 'Code Changed, I will update the code and re-run it'
     # Step 2: kill the script
-    killProcessByName('babyMonitor.py')
+    #killProcessByName(scriptName)
     # Step 3: re-run the script
-    os.system("./babyMonitor.py `cat apiId.txt` &")
+    #os.system("./babyMonitor.py `cat apiId.txt` &")
     restartProgram()
   time.sleep(delayTime)
