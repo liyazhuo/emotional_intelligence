@@ -20,8 +20,7 @@ def getLock(process_name):
 
 print 'Starting Script'    
 
-# This script will run on the raspberry pi, check if the microcontroller code changed then compile and 
-# and re-upload it once done, steps:
+# This script will run on the raspberry pi, check if the monitoring script changed, get the latest version and re-run it
 # 1- Check if the code changed (git pull)
 # 2- Kill the running program
 # 3- Re-run the updated version
