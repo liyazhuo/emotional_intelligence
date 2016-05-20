@@ -197,16 +197,16 @@ def save_speech(data, p):
     """ Saves mic data to temporary WAV file. Returns filename of saved 
         file """
     global soundsFolder
-    filename = soundsFolder + '/output_'+ time.strftime("%Y-%m-%d_%H-%M-%S")
+    filename = soundsFolder + '/output_'+ time.strftime("%Y-%m-%d_%H-%M-%S") + '.wav'
     # writes data to WAV file
     data = ''.join(data)
-    wf = wave.open(filename + '.wav', 'wb')
+    wf = wave.open(filename, 'wb')
     wf.setnchannels(1)
     wf.setsampwidth(p.get_sample_size(pyaudio.paInt16))
     wf.setframerate(16000)  # TODO make this value a function parameter?
     wf.writeframes(data)
     wf.close()
-    return filename + '.wav'
+    return filename
 
 class CamHandler(BaseHTTPRequestHandler):
     def do_GET(self):        
