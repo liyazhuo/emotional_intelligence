@@ -169,6 +169,7 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
             print "Finished"
             # The limit was reached, finish capture and deliver.
             filename = save_speech(list(prev_audio) + audio2send, p)
+            (rc, mid) = client.publish("/home/babyMonitor/soundDetected", filename, qos=1)
             print "saved to :",filename
             # Remove temp file. Comment line to review.
             #os.remove(filename)
