@@ -20,22 +20,6 @@ def getLock(process_name):
         sys.exit()
         
 # getLock('robotica')
-
-print 'Starting Script'    
-#Kill the script if it's already running
-killProcessByName(scriptName)
-#Re-run the script
-os.system(scriptCmd)
-    
-# This script will run on the raspberry pi, check if the monitoring script changed, get the latest version and re-run it
-# 1- Check if the code changed (git pull)
-# 2- Kill the running program
-# 3- Re-run the updated version
-
-delayTime  = 30 # delay between each checks in seconds
-scriptPath = os.path.dirname(os.path.abspath(__file__))
-os.chdir(scriptPath)
-
 def killProcessByName(scriptName):
   process = subprocess.Popen(["ps", "-eo","pid,command"], stdout=subprocess.PIPE)
   output = process.communicate()[0]
@@ -45,6 +29,23 @@ def killProcessByName(scriptName):
       pid = line.split(' ')[1]
       print pid
       os.system('kill -9 ' + pid)
+      
+print 'Starting Script:',scriptName
+#Kill the script if it's already running
+killProcessByName(scriptName)
+#Re-run the script
+os.system(scriptCmd)
+
+# This script will run on the raspberry pi, check if the monitoring script changed, get the latest version and re-run it
+# 1- Check if the code changed (git pull)
+# 2- Kill the running program
+# 3- Re-run the updated version
+
+delayTime  = 30 # delay between each checks in seconds
+scriptPath = os.path.dirname(os.path.abspath(__file__))
+os.chdir(scriptPath)
+
+
 
 def restartProgram():
   print 'Restarting Script'
