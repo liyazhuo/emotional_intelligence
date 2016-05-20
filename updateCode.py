@@ -39,7 +39,7 @@ os.system(scriptCmd)
 # This script will run on the raspberry pi, check if the monitoring script changed, get the latest version and re-run it
 # 1- Check if the code changed (git pull)
 # 2- Kill the running program
-# 3- Re-run the updated version
+# 3- Re-run the update script and initiate the monitoring
 
 delayTime  = 30 # delay between each checks in seconds
 scriptPath = os.path.dirname(os.path.abspath(__file__))
@@ -60,9 +60,5 @@ while True:
   # Step 1: check if code changed
   if output != '' and 'Already up-to-date' not in output:
     print 'Code Changed, I will update the code and re-run it'
-    # Step 2: kill the script
-    #killProcessByName(scriptName)
-    # Step 3: re-run the script
-    #os.system("./babyMonitor.py `cat apiId.txt` &")
     restartProgram()
   time.sleep(delayTime)

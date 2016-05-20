@@ -20,7 +20,8 @@ from BaseHTTPServer import BaseHTTPRequestHandler,HTTPServer
 import StringIO
 from datetime import datetime
 import paho.mqtt.client as paho
- 
+import logging
+
 def on_connect(client, userdata, flags, rc):
     print("CONNACK received with code %d." % (rc))
 
@@ -40,7 +41,6 @@ client.on_publish = on_publish
 client.on_subscribe = on_subscribe
 client.on_message = on_message
 client.connect("192.168.2.15", 1883)
-#client.subscribe("/home/IoT_Temp1", qos=1)
 client.loop_start()
 
 capture = None
@@ -69,6 +69,10 @@ imageSavingPeriod = 5
 
 soundsFolder      = '/media/RouterMedia/BabyMonitor/sounds'
 imagesFolder      = '/media/RouterMedia/BabyMonitor/images'
+logsFolder        = '/media/RouterMedia/BabyMonitor/logs'
+
+logging.basicConfig(filename='log_' + time.strftime("%Y-%m-%d_%H:%M:%S") + '.log',level=logging.DEBUG,format='%(asctime)s %(levelname)s:%(message)s', datefmt='%m/%d/%Y %I:%M:%S %p')
+logging.debug('BabyMonitor Initiated')
 
 # Microphone stream config.
 CHUNK = 2048  # CHUNKS of bytes to read each time from mic
@@ -257,7 +261,7 @@ class CamHandler(BaseHTTPRequestHandler):
                         cv2.putText(frame,time.strftime("%Y-%m-%d %H:%M:%S"), (cols -200, rows -20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255,255,255), 1)  
                     
                     if imageSavingPeriod != -1 and (time.time() - lastTimeImageSave) > imageSavingPeriod:
-                        cv2.imwrite(imagesFolder + '/image_'+ time.strftime("%Y-%m-%d %H:%M:%S") + '_.png',frame)
+                        cv2.imwrite(imagesFolder + '/image_'+ time.strftime("%Y-%m-%d_%H:%M:%S") + '.png',frame)
                         lastTimeImageSave = time.time()
                     imgRGB=cv2.cvtColor(frame,cv2.COLOR_BGR2RGB)
                     jpg = Image.fromarray(imgRGB)
