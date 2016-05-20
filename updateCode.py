@@ -56,8 +56,6 @@ while True:
     # Step 2: kill the script
     killProcessByName('babyMonitor.py')
     # Step 3: re-run the script
-    process = subprocess.Popen(["./babyMonitor.py `cat apiId.txt` &"], stdout=subprocess.PIPE)
-    output = process.communicate()[0]
-    print output
+    subprocess.Popen(["./babyMonitor.py `cat apiId.txt`"])
     restartProgram()
   time.sleep(delayTime)
