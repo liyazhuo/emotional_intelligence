@@ -52,11 +52,11 @@ while True:
   output = process.communicate()[0]
   # Step 1: check if code changed
   if output != '' and 'Already up-to-date' not in output:
-    print 'Code Changed, I should recompile and upload to the Atmega328 board'
+    print 'Code Changed, I will update the code and re-run it'
     # Step 2: kill the script
     killProcessByName('babyMonitor.py')
     # Step 3: re-run the script
-    process = subprocess.Popen(["./babyMonitor.py","`cat apiId.txt`"], stdout=subprocess.PIPE)
+    process = subprocess.Popen(["./babyMonitor.py `cat apiId.txt`"], stdout=subprocess.PIPE)
     output = process.communicate()[0]
     print output
     restartProgram()
