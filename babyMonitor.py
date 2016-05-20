@@ -197,7 +197,7 @@ def save_speech(data, p):
     """ Saves mic data to temporary WAV file. Returns filename of saved 
         file """
     global soundsFolder
-    filename = soundsFolder + '/output_'+ time.strftime("%Y-%m-%d_%H:%M:%S")
+    filename = soundsFolder + '/output_'+ time.strftime("%Y-%m-%d_%H-%M-%S")
     # writes data to WAV file
     data = ''.join(data)
     wf = wave.open(filename + '.wav', 'wb')
