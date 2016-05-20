@@ -57,5 +57,6 @@ while True:
     killProcessByName('babyMonitor.py')
     # Step 3: re-run the script
     os.system("./babyMonitor.py `cat apiId.txt` &")
+    
     restartProgram()
   time.sleep(delayTime)
