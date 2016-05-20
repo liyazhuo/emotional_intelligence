@@ -59,7 +59,7 @@ params = urllib.urlencode({
 
 lastTime        = time.time()
 emotionKnown    = False
-analyseImage    = True
+analyseImage    = False
 emotionalConf   = 0
 status          = ''
 processDelaySec = 30    
