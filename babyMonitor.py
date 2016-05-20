@@ -146,6 +146,8 @@ def listen_for_speech(threshold=THRESHOLD, num_phrases=-1):
             if ex[1] != pyaudio.paInputOverflowed:
                 raise
             cur_data = '\x00' * CHUNK
+        except:
+            print "Unexpected error:", sys.exc_info()[0]       
         numReads = numReads + 1
         if numReads < 5:
             continue
