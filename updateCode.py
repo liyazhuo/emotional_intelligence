@@ -5,9 +5,9 @@ import os
 import sys
 import socket
 
-path       =  os.path.dirname(os.path.realpath(__file__))
-scriptName = path + 'babyMonitor.py'
-scriptCmd  = path + "/babyMonitor.py `cat " + path + "/apiId.txt` &"
+scriptPath = os.path.dirname(os.path.realpath(__file__))
+scriptName = scriptPath + 'babyMonitor.py'
+scriptCmd  = scriptPath + "/babyMonitor.py `cat " + scriptPath + "/apiId.txt` &"
 
 # Just be sure that we are running only one instance of this script
 
@@ -20,7 +20,6 @@ def getLock(process_name):
         print 'Only one instance of this script is allowed to run'
         sys.exit()
         
-# getLock('robotica')
 def killProcessByName(scriptName):
   process = subprocess.Popen(["ps", "-eo","pid,command"], stdout=subprocess.PIPE)
   output = process.communicate()[0]
@@ -45,10 +44,7 @@ os.system(scriptCmd)
 # 3- Re-run the update script and initiate the monitoring
 
 delayTime  = 30 # delay between each checks in seconds
-scriptPath = os.path.dirname(os.path.abspath(__file__))
 os.chdir(scriptPath)
-
-
 
 def restartProgram():
   print 'Restarting Script'
