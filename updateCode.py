@@ -30,7 +30,9 @@ def killProcessByName(scriptName):
       pid = line.split(' ')[1]
       print pid
       os.system('kill -9 ' + pid)
-      
+
+time.sleep(30)
+
 print 'Starting Script:',scriptName
 #Kill the script if it's already running
 killProcessByName(scriptName)
