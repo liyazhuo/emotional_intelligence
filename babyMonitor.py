@@ -69,7 +69,8 @@ imageSavingPeriod = 5
 
 soundsFolder      = '/media/RouterMedia/BabyMonitor/sounds'
 imagesFolder      = '/media/RouterMedia/BabyMonitor/images'
-logsFolder        = '/media/RouterMedia/BabyMonitor/logs'
+#logsFolder        = '/media/RouterMedia/BabyMonitor/logs'
+logsFolder        = '/home/pi/workspace'
 
 logging.basicConfig(filename= logsFolder + '/log_' + time.strftime("%Y-%m-%d_%H:%M:%S") + '.log', filemode='w',level=logging.DEBUG,format='%(asctime)s %(levelname)s:%(message)s - ', datefmt='%m/%d/%Y %I:%M:%S %p')
 logging.info('BabyMonitor Initiated')

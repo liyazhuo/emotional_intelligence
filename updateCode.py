@@ -5,8 +5,9 @@ import os
 import sys
 import socket
 
-scriptName = 'babyMonitor.py'
-scriptCmd  = "./babyMonitor.py `cat apiId.txt` &"
+path       =  os.path.dirname(os.path.realpath(__file__))
+scriptName = path + 'babyMonitor.py'
+scriptCmd  = path + "/babyMonitor.py `cat " + path + "/apiId.txt` &"
 
 # Just be sure that we are running only one instance of this script
 
